@@ -1,2 +1,33 @@
-# sotu
-疎通確認
+# sotu(疎通)
+
+ネットワークの疎通確認をするための Client と Server プログラムです。
+
+# Usage
+
+## HTTP疎通確認
+
+Run server
+
+```
+$ sotu server
+Server is running at 0.0.0.0:8888
+```
+
+Run client
+
+```
+$ sotu client
+HTTP/1.0 200 OK
+Connection: close
+
+HTTP connection was successful
+```
+
+## TCP疎通確認
+
+Run server
+
+```
+```
+
+
