@@ -1,6 +1,6 @@
 # sotu(疎通)
 
-ネットワークの疎通確認をするための Client と Server プログラムです。
+ネットワークの疎通確認をするためのプログラムです
 
 # Usage
 
@@ -10,7 +10,7 @@ Run server
 
 ```
 $ sotu server
-Server is running at 0.0.0.0:8888
+HTTP Server is running at 0.0.0.0:8888
 ```
 
 Run client
@@ -28,6 +28,13 @@ HTTP connection was successful
 Run server
 
 ```
+$ sotu server -protocol tcp
+TCP Server is running at 0.0.0.0:8888
 ```
 
+Run client
 
+```
+$ sotu client -protocol tcp
+reply from server= Hello
+```

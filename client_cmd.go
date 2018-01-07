@@ -8,36 +8,37 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
-	"strings"
+	"os"
 
 	"github.com/google/subcommands"
 )
 
 type clientCmd struct {
-	capitalize bool
+	protocol string
 }
 
 func (*clientCmd) Name() string     { return "client" }
 func (*clientCmd) Synopsis() string { return "client args to stdout." }
 func (*clientCmd) Usage() string {
-	return `client [-capitalize] <some text>:
-	client args to stdout.
+	return `client:
+	Run client.
   `
 }
 
 func (p *clientCmd) SetFlags(f *flag.FlagSet) {
-	f.BoolVar(&p.capitalize, "capitalize", false, "capitalize output")
+	f.StringVar(&p.protocol, "protocol", "http", "http or tcp")
 }
 
-func (p *clientCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	for _, arg := range f.Args() {
-		if p.capitalize {
-			arg = strings.ToUpper(arg)
-		}
-		fmt.Printf("%s ", arg)
+func (c *clientCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	if c.protocol == "tcp" {
+		c.requestTCP()
+	} else {
+		c.requestHTTP()
 	}
-	fmt.Println()
+	return subcommands.ExitSuccess
+}
 
+func (p *clientCmd) requestHTTP() {
 	conn, err := net.Dial("tcp", "0.0.0.0:8888")
 	if err != nil {
 		panic(err)
@@ -57,6 +58,26 @@ func (p *clientCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}
 		panic(err)
 	}
 	fmt.Println(string(dump))
+}
 
-	return subcommands.ExitSuccess
+func (p *clientCmd) requestTCP() {
+	conn, err := net.Dial("tcp", "0.0.0.0:8888")
+	if err != nil {
+		panic(err)
+	}
+	_, err = conn.Write([]byte("hello"))
+
+	if err != nil {
+		println("Write to server failed:", err.Error())
+		os.Exit(1)
+	}
+
+	reply := make([]byte, 1024)
+	_, err = conn.Read(reply)
+	if err != nil {
+		println("Write to server failed:", err.Error())
+		os.Exit(1)
+	}
+
+	println("reply from server=", string(reply))
 }
